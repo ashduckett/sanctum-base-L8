@@ -9,6 +9,7 @@ use App\Http\Controllers\ApiController;
 class AuthController extends ApiController
 {
     public function register(Request $request) {
+
         $validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -20,11 +21,12 @@ class AuthController extends ApiController
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password'])
+            'password' => bcrypt($validatedData['password']),
+            'email_verified_at' => null,
+            'verified' => User::UNVERIFIED_USER,
+            'verification_token' => User::generateVerificationToken(),
+            'admin' => User::REGULAR_USER
         ]);
-
         return $this->showOne($user, 200);
-        // return ['user' => $user];
-
     }
 }
