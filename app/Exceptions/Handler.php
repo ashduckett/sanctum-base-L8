@@ -31,15 +31,22 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    // public function render($request, Exception $exception) {
-    //     // var_dump('Function hit');
-    //     return response()->json(['shit' => false], 401);
-    // }
+    protected function unauthenticated($request, AuthenticationException $exception) {
+        // return response()->json(['status' => false], 401);
+        return $this->errorResponse('Unauthenticated', 401);
+    }
 
-    // protected function unauthenticated($request, AuthenticationException $exception) {
-    //     // var_dump('GOT HERE');
-    //     return response()->json(['status' => false], 401);
-    // }
+    public function render($request, Throwable $exception) {
+
+        if ($exception instanceof ValidationException) {
+            $errors = $exception->validator->errors()->getMessages();
+            return $this->errorResponse($errors, 422);
+        }
+        
+        if ($exception instanceof AuthenticationException) {
+            return $this->unauthenticated($request, $exception);
+        }
+    }
     
     /**
      * Register the exception handling callbacks for the application.
